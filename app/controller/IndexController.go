@@ -1,16 +1,19 @@
-package IndexController
+package controller
 
 import (
-	"fmt"
 	"net/http"
 
-	"github.com/julienschmidt/httprouter"
+	"github.com/gin-gonic/gin"
 )
 
-func Index(w http.ResponseWriter, r *http.Request, _ httprouter.Params) {
-	fmt.Fprint(w, "Welcome!\n")
+func Index(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"message": "welcome",
+	})
 }
 
-func Hello(w http.ResponseWriter, r *http.Request, ps httprouter.Params) {
-	fmt.Fprintf(w, "hello, %s!\n", ps.ByName("name"))
+func Hello(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Hello",
+	})
 }

@@ -1,18 +1,23 @@
 package main
 
 import (
-	"log"
-	"net/http"
-
-	"github.com/julienschmidt/httprouter"
-
+	"github.com/SojebSikder/goframe/app/middleware"
+	"github.com/SojebSikder/goframe/config"
 	"github.com/SojebSikder/goframe/routes"
+	"github.com/gin-gonic/gin"
 )
 
 func main() {
-	router := httprouter.New()
+	// Initialize the application
+	r := gin.Default()
 
-	routes.Routes(router)
+	config.GetConfig()
+	r.Static("/static", "./"+config.StaticDir)
+	r.LoadHTMLGlob(config.TemplateDir + "/*")
 
-	log.Fatal(http.ListenAndServe(":8080", router))
+	// Custom middleware call here
+	r.Use(middleware.Hello())
+	routes.Routes(r)
+
+	r.Run(":8080")
 }

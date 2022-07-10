@@ -1,16 +1,17 @@
 package routes
 
 import (
-	"log"
 	"net/http"
 
-	IndexController "github.com/SojebSikder/goframe/app/controller"
-	"github.com/julienschmidt/httprouter"
+	controller "github.com/SojebSikder/goframe/app/controller"
+	"github.com/gin-gonic/gin"
 )
 
-func Routes(router *httprouter.Router) {
-	router.GET("/", IndexController.Index)
-	router.GET("/hello/:name", IndexController.Hello)
-
-	log.Fatal(http.ListenAndServe(":8080", router))
+func Routes(router *gin.Engine) {
+	router.GET("/", func(c *gin.Context) {
+		c.HTML(http.StatusOK, "index.html", gin.H{
+			"title": "Main website",
+		})
+	})
+	router.GET("/test", controller.Index)
 }

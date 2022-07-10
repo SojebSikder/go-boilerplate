@@ -1,2 +1,12 @@
 # goframe
-A go web framework for creating web application
+
+A go boilerplate to create new web application
+
+## Running
+
+`go run main.go`
+
+## Technology used:
+
+- Gin
+- ent
