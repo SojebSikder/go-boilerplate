@@ -2,7 +2,6 @@ package config
 
 import (
 	"os"
-	"time"
 
 	"github.com/joeshaw/envdecode"
 )
@@ -55,49 +54,16 @@ func SwitchEnvironment(env environment) {
 type (
 	// Config stores complete configuration
 	Config struct {
-		HTTP     HTTPConfig
-		App      AppConfig
 		Database DatabaseConfig
 	}
-
-	// HTTPConfig stores HTTP configuration
-	HTTPConfig struct {
-		Hostname     string        `env:"HTTP_HOSTNAME"`
-		Port         uint16        `env:"HTTP_PORT,default=8000"`
-		ReadTimeout  time.Duration `env:"HTTP_READ_TIMEOUT,default=5s"`
-		WriteTimeout time.Duration `env:"HTTP_WRITE_TIMEOUT,default=10s"`
-		IdleTimeout  time.Duration `env:"HTTP_IDLE_TIMEOUT,default=2m"`
-		TLS          struct {
-			Enabled     bool   `env:"HTTP_TLS_ENABLED,default=false"`
-			Certificate string `env:"HTTP_TLS_CERTIFICATE"`
-			Key         string `env:"HTTP_TLS_KEY"`
-		}
-	}
-
-	// AppConfig stores application configuration
-	AppConfig struct {
-		Name        string      `env:"APP_NAME,default=Goframe"`
-		Environment environment `env:"APP_ENVIRONMENT,default=local"`
-		// THIS MUST BE OVERRIDDEN ON ANY LIVE ENVIRONMENTS
-		EncryptionKey string        `env:"APP_ENCRYPTION_KEY,default=?E(G+KbPeShVmYq3t6w9z$C&F)J@McQf"`
-		Timeout       time.Duration `env:"APP_TIMEOUT,default=20s"`
-		PasswordToken struct {
-			Expiration time.Duration `env:"APP_PASSWORD_TOKEN_EXPIRATION,default=60m"`
-			Length     int           `env:"APP_PASSWORD_TOKEN_LENGTH,default=64"`
-		}
-		EmailVerificationTokenExpiration time.Duration `env:"APP_EMAIL_VERIFICATION_TOKEN_EXPIRATION,default=12h"`
-	}
-
-	// CacheConfig stores the cache configuration
-
 	// DatabaseConfig stores the database configuration
 	DatabaseConfig struct {
-		Hostname     string `env:"DB_HOSTNAME,default=localhost"`
+		Hostname     string `env:"DB_HOST,default=localhost"`
 		Port         uint16 `env:"DB_PORT,default=5432"`
-		User         string `env:"DB_USER,default=admin"`
-		Password     string `env:"DB_PASSWORD,default=admin"`
-		Database     string `env:"DB_NAME,default=app"`
-		TestDatabase string `env:"DB_NAME_TEST,default=app_test"`
+		User         string `env:"DB_USERNAME,default=admin"`
+		Password     string `env:"DB_PASSWORD,default="`
+		Database     string `env:"DB_DATABASE,default=app"`
+		TestDatabase string `env:"DB_DATABASE_TEST,default=app_test"`
 	}
 )
 

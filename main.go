@@ -5,6 +5,7 @@ import (
 	"github.com/SojebSikder/goframe/config"
 	"github.com/SojebSikder/goframe/routes"
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 
 	"context"
 	"log"
@@ -14,8 +15,27 @@ import (
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+	ctg, _ := config.GetConfig()
+
+	// Initialize the database connection
+	hostname := ctg.Database.Hostname
+	database := ctg.Database.Database
+	user := ctg.Database.User
+	password := ctg.Database.Password
+
+	var databaseConnection string
+	if password == "" {
+		databaseConnection = user + "@tcp(" + hostname + ":3306)/" + database + "?parseTime=True"
+	} else {
+		databaseConnection = user + ":" + password + "@tcp(" + hostname + ":3306)/" + database + "?parseTime=True"
+	}
 	// Initialize database connection
-	client, err := ent.Open("mysql", "root@tcp(localhost:3306)/go-example?parseTime=True")
+	client, err := ent.Open("mysql", databaseConnection)
+	// client, err := ent.Open("mysql", "root:pass@tcp(localhost:3306)/go-example?parseTime=True")
 	if err != nil {
 		log.Fatalf("failed opening connection to mysql: %v", err)
 	}
@@ -24,11 +44,11 @@ func main() {
 	if err := client.Schema.Create(context.Background()); err != nil {
 		log.Fatalf("failed creating schema resources: %v", err)
 	}
+	//
 
 	// Initialize the application
 	r := gin.Default()
 
-	config.GetConfig()
 	r.Static("/static", "./"+config.StaticDir)
 	r.LoadHTMLGlob(config.TemplateDir + "/*")
 
