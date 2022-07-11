@@ -10,14 +10,8 @@ const (
 	// TemplateDir stores the name of the directory that contains templates
 	TemplateDir = "views"
 
-	// TemplateExt stores the extension used for the template files
-	TemplateExt = ".gohtml"
-
 	// StaticDir stores the name of the directory that will serve static files
 	StaticDir = "static"
-
-	// StaticPrefix stores the URL prefix used when serving static files
-	StaticPrefix = "files"
 )
 
 type environment string

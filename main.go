@@ -4,6 +4,7 @@ import (
 	"github.com/SojebSikder/goframe/app/middleware"
 	"github.com/SojebSikder/goframe/config"
 	"github.com/SojebSikder/goframe/routes"
+	orm "github.com/SojebSikder/goframe/system/core/ORM"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 
@@ -40,11 +41,14 @@ func main() {
 		log.Fatalf("failed opening connection to mysql: %v", err)
 	}
 	defer client.Close()
+	ctx := context.Background()
 	// Run the auto migration tool.
 	if err := client.Schema.Create(context.Background()); err != nil {
 		log.Fatalf("failed creating schema resources: %v", err)
 	}
 	//
+	// Initialize ORM
+	orm.Init(ctx, client)
 
 	// Initialize the application
 	r := gin.Default()
