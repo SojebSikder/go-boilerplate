@@ -1,4 +1,4 @@
-package ORM
+package orm
 
 import (
 	"context"
