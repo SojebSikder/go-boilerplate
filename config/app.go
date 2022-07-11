@@ -57,6 +57,7 @@ type (
 	AppConfig struct {
 		Name        string      `env:"APP_NAME,default=Goframe"`
 		Environment environment `env:"APP_ENVIRONMENT,default=local"`
+		Port        string      `env:"PORT,default=8080"`
 	}
 	// DatabaseConfig stores the database configuration
 	DatabaseConfig struct {

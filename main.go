@@ -60,5 +60,5 @@ func main() {
 	r.Use(middleware.Hello())
 	routes.Routes(r)
 
-	r.Run(":8080")
+	r.Run(":" + ctg.App.Port)
 }
