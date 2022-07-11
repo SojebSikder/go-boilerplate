@@ -14,6 +14,10 @@ go generate ./ent
 go run main.go
 ```
 
+## Database
+
+- Create new migraion using `ent init TableName`
+
 ## Technology used:
 
 - Gin

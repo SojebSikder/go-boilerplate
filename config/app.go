@@ -54,7 +54,15 @@ func SwitchEnvironment(env environment) {
 type (
 	// Config stores complete configuration
 	Config struct {
+		App      AppConfig
 		Database DatabaseConfig
+		Mail     MailConfig
+	}
+
+	// AppConfig stores application configuration
+	AppConfig struct {
+		Name        string      `env:"APP_NAME,default=Goframe"`
+		Environment environment `env:"APP_ENVIRONMENT,default=local"`
 	}
 	// DatabaseConfig stores the database configuration
 	DatabaseConfig struct {
@@ -64,6 +72,14 @@ type (
 		Password     string `env:"DB_PASSWORD,default="`
 		Database     string `env:"DB_DATABASE,default=app"`
 		TestDatabase string `env:"DB_DATABASE_TEST,default=app_test"`
+	}
+	// MailConfig stores the mail configuration
+	MailConfig struct {
+		Hostname    string `env:"MAIL_HOST,default=localhost"`
+		Port        uint16 `env:"MAIL_PORT,default=25"`
+		User        string `env:"MAIL_USERNAME,default=admin"`
+		Password    string `env:"MAIL_PASSWORD,default=admin"`
+		FromAddress string `env:"MAIL_FROM_ADDRESS,default=admin@localhost"`
 	}
 )
 
