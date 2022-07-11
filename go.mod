@@ -1,3 +1,5 @@
+// +heroku goVersion go1.18
+
 module github.com/SojebSikder/goframe
 
 go 1.18
