@@ -1,1 +1,1 @@
-web: goframe
+web: go-boilerplate

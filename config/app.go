@@ -55,18 +55,13 @@ type (
 
 	// AppConfig stores application configuration
 	AppConfig struct {
-		Name        string      `env:"APP_NAME,default=Goframe"`
+		Name        string      `env:"APP_NAME,default=go-boilerplate"`
 		Environment environment `env:"APP_ENVIRONMENT,default=local"`
 		Port        string      `env:"PORT,default=8080"`
 	}
 	// DatabaseConfig stores the database configuration
 	DatabaseConfig struct {
-		Hostname     string `env:"DB_HOST,default=localhost"`
-		Port         uint16 `env:"DB_PORT,default=5432"`
-		User         string `env:"DB_USERNAME,default=admin"`
-		Password     string `env:"DB_PASSWORD,default="`
-		Database     string `env:"DB_DATABASE,default=app"`
-		TestDatabase string `env:"DB_DATABASE_TEST,default=app_test"`
+		DatabaseURL string `env:"DATABASE_URL,default=postgres://user:pass@localhost:5432/testdemo"`
 	}
 	// MailConfig stores the mail configuration
 	MailConfig struct {

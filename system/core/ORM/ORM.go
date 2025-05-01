@@ -1,19 +1,26 @@
 package orm
 
 import (
-	"context"
+	"fmt"
 
-	"github.com/SojebSikder/goframe/ent"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
-// Ctx is the context of the ORM
-var Ctx context.Context
-
-// Client is the client of the ORM
-var Client *ent.Client
+var db *gorm.DB
+var err error
 
 // Init initializes the ORM
-func Init(ctx context.Context, client *ent.Client) {
-	Ctx = ctx
-	Client = client
+func Init(configString string) {
+	db, err = gorm.Open(postgres.Open(configString), &gorm.Config{})
+	if err != nil {
+		fmt.Println("Failed to connect to the database:", err)
+		return
+	}
+
+	fmt.Println("Connected to the database")
+}
+
+func GetDB() *gorm.DB {
+	return db
 }

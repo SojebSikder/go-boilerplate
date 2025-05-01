@@ -1,19 +1,22 @@
 package main
 
 import (
-	"github.com/SojebSikder/goframe/app/middleware"
-	"github.com/SojebSikder/goframe/config"
-	"github.com/SojebSikder/goframe/routes"
-	orm "github.com/SojebSikder/goframe/system/core/ORM"
+	"sojebsikder/go-boilerplate/config"
+	"sojebsikder/go-boilerplate/routes"
+	orm "sojebsikder/go-boilerplate/system/core/ORM"
+
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	"gorm.io/gorm"
 
-	"context"
 	"log"
-
-	"github.com/SojebSikder/goframe/ent"
-	_ "github.com/go-sql-driver/mysql"
 )
+
+type Product struct {
+	gorm.Model
+	Code  string
+	Price uint
+}
 
 func main() {
 	err := godotenv.Load()
@@ -22,33 +25,11 @@ func main() {
 	}
 	ctg, _ := config.GetConfig()
 
-	// Initialize the database connection
-	hostname := ctg.Database.Hostname
-	database := ctg.Database.Database
-	user := ctg.Database.User
-	password := ctg.Database.Password
-
-	var databaseConnection string
-	if password == "" {
-		databaseConnection = user + "@tcp(" + hostname + ":3306)/" + database + "?parseTime=True"
-	} else {
-		databaseConnection = user + ":" + password + "@tcp(" + hostname + ":3306)/" + database + "?parseTime=True"
-	}
-	// Initialize database connection
-	client, err := ent.Open("mysql", databaseConnection)
-	// client, err := ent.Open("mysql", "root:pass@tcp(localhost:3306)/go-example?parseTime=True")
-	if err != nil {
-		log.Fatalf("failed opening connection to mysql: %v", err)
-	}
-	defer client.Close()
-	ctx := context.Background()
-	// Run the auto migration tool.
-	if err := client.Schema.Create(context.Background()); err != nil {
-		log.Fatalf("failed creating schema resources: %v", err)
-	}
-	//
+	DatabaseURL := ctg.Database.DatabaseURL
 	// Initialize ORM
-	orm.Init(ctx, client)
+	orm.Init(DatabaseURL)
+	// Migrate the schema
+	orm.GetDB().AutoMigrate(&Product{})
 
 	// Initialize the application
 	r := gin.Default()
@@ -57,8 +38,8 @@ func main() {
 	r.LoadHTMLGlob(config.TemplateDir + "/*")
 
 	// Custom middleware call here
-	r.Use(middleware.Hello())
-	routes.Routes(r)
+	// Setup the routes
+	routes.SetupRouter(r, orm.GetDB())
 
 	r.Run(":" + ctg.App.Port)
 }
