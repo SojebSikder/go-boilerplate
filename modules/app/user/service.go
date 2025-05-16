@@ -1,8 +1,8 @@
 package user
 
 import (
+	"sojebsikder/go-boilerplate/common/repository"
 	"sojebsikder/go-boilerplate/models"
-	"sojebsikder/go-boilerplate/modules/common/repository"
 )
 
 type Service interface {

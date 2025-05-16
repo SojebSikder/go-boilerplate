@@ -1,7 +1,7 @@
-package user
+package auth
 
 import (
-	"sojebsikder/go-boilerplate/modules/common/repository"
+	"sojebsikder/go-boilerplate/common/repository"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -12,9 +12,9 @@ func RegisterRoutes(r *gin.Engine, db *gorm.DB) {
 	service := NewService(repo)
 	handler := NewHandler(service)
 
-	userRoutes := r.Group("/users")
-	{
-		userRoutes.POST("/", handler.Create)
-		userRoutes.GET("/", handler.GetAll)
-	}
+	routes := r.Group("/auth")
+
+	routes.POST("/register", handler.Register)
+	routes.POST("/login", handler.Login)
+
 }
