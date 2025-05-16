@@ -50,6 +50,7 @@ type (
 	Config struct {
 		App      AppConfig
 		Database DatabaseConfig
+		Security SecurityConfig
 		Mail     MailConfig
 	}
 
@@ -63,6 +64,12 @@ type (
 	DatabaseConfig struct {
 		DatabaseURL string `env:"DATABASE_URL,default=postgres://user:pass@localhost:5432/testdemo"`
 	}
+
+	// SecurityConfig stores the security configuration
+	SecurityConfig struct {
+		JWTKey string `env:"JWT_KEY,default=secret"`
+	}
+
 	// MailConfig stores the mail configuration
 	MailConfig struct {
 		Hostname    string `env:"MAIL_HOST,default=localhost"`

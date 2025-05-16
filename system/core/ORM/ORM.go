@@ -1,4 +1,4 @@
-package orm
+package ORM
 
 import (
 	"fmt"

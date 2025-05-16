@@ -2,21 +2,15 @@ package main
 
 import (
 	"sojebsikder/go-boilerplate/config"
+	"sojebsikder/go-boilerplate/models"
 	"sojebsikder/go-boilerplate/routes"
-	orm "sojebsikder/go-boilerplate/system/core/ORM"
+	ORM "sojebsikder/go-boilerplate/system/core/ORM"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	"gorm.io/gorm"
 
 	"log"
 )
-
-type Product struct {
-	gorm.Model
-	Code  string
-	Price uint
-}
 
 func main() {
 	err := godotenv.Load()
@@ -27,9 +21,9 @@ func main() {
 
 	DatabaseURL := ctg.Database.DatabaseURL
 	// Initialize ORM
-	orm.Init(DatabaseURL)
+	ORM.Init(DatabaseURL)
 	// Migrate the schema
-	orm.GetDB().AutoMigrate(&Product{})
+	ORM.GetDB().AutoMigrate(&models.User{})
 
 	// Initialize the application
 	r := gin.Default()
@@ -39,7 +33,7 @@ func main() {
 
 	// Custom middleware call here
 	// Setup the routes
-	routes.SetupRouter(r, orm.GetDB())
+	routes.SetupRouter(r, ORM.GetDB())
 
 	r.Run(":" + ctg.App.Port)
 }
