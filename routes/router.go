@@ -1,8 +1,8 @@
 package routes
 
 import (
-	"sojebsikder/go-boilerplate/modules/app/user"
-	"sojebsikder/go-boilerplate/modules/auth"
+	"github.com/sojebsikder/go-boilerplate/internal/app/user"
+	"github.com/sojebsikder/go-boilerplate/internal/auth"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"

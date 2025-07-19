@@ -1,18 +1,19 @@
 package auth
 
 import (
-	"sojebsikder/go-boilerplate/common/repository"
-	"sojebsikder/go-boilerplate/config"
-	"sojebsikder/go-boilerplate/models"
 	"time"
+
+	"github.com/sojebsikder/go-boilerplate/config"
+	"github.com/sojebsikder/go-boilerplate/model"
+	"github.com/sojebsikder/go-boilerplate/pkg/repository"
 
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type Service interface {
-	CreateUser(models.User) (models.User, error)
-	GetAllUsers() ([]models.User, error)
+	CreateUser(model.User) (model.User, error)
+	GetAllUsers() ([]model.User, error)
 	Login(string, string) (string, error)
 	HashPassword(string) (string, error)
 }
@@ -25,11 +26,11 @@ func NewService(repo repository.Repository) Service {
 	return &service{repo}
 }
 
-func (s *service) CreateUser(user models.User) (models.User, error) {
+func (s *service) CreateUser(user model.User) (model.User, error) {
 	return s.repo.Create(user)
 }
 
-func (s *service) GetAllUsers() ([]models.User, error) {
+func (s *service) GetAllUsers() ([]model.User, error) {
 	return s.repo.FindAll()
 }
 
@@ -71,7 +72,7 @@ func (s *service) ComparePassword(hashedPassword, password string) error {
 	return nil
 }
 
-func (s *service) UpdateUser(user models.User) (models.User, error) {
+func (s *service) UpdateUser(user model.User) (model.User, error) {
 	return s.repo.Update(user)
 }
 

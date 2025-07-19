@@ -3,7 +3,7 @@ package auth
 import (
 	"net/http"
 
-	"sojebsikder/go-boilerplate/models"
+	"github.com/sojebsikder/go-boilerplate/model"
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
@@ -34,7 +34,7 @@ func (h *Handler) Register(c *gin.Context) {
 		return
 	}
 
-	user := models.User{
+	user := model.User{
 		Name:     body.Name,
 		Email:    body.Email,
 		Password: string(hashedPassword),

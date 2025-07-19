@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"sojebsikder/go-boilerplate/common/repository"
+	"github.com/sojebsikder/go-boilerplate/pkg/repository"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"

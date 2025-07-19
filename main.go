@@ -1,10 +1,10 @@
 package main
 
 import (
-	"sojebsikder/go-boilerplate/config"
-	"sojebsikder/go-boilerplate/models"
-	"sojebsikder/go-boilerplate/routes"
-	ORM "sojebsikder/go-boilerplate/system/core/ORM"
+	"github.com/sojebsikder/go-boilerplate/config"
+	"github.com/sojebsikder/go-boilerplate/model"
+	"github.com/sojebsikder/go-boilerplate/pkg/ORM"
+	"github.com/sojebsikder/go-boilerplate/routes"
 
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
@@ -23,7 +23,7 @@ func main() {
 	// Initialize ORM
 	ORM.Init(DatabaseURL)
 	// Migrate the schema
-	ORM.GetDB().AutoMigrate(&models.User{})
+	ORM.GetDB().AutoMigrate(&model.User{})
 
 	// Initialize the application
 	r := gin.Default()

@@ -3,7 +3,7 @@ package user
 import (
 	"net/http"
 
-	"sojebsikder/go-boilerplate/models"
+	"github.com/sojebsikder/go-boilerplate/model"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,11 +17,12 @@ func NewHandler(service Service) *Handler {
 }
 
 func (h *Handler) Create(c *gin.Context) {
-	var user models.User
+	var user model.User
 	if err := c.ShouldBindJSON(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
 	created, err := h.service.CreateUser(user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

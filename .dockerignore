@@ -1,0 +1,17 @@
+# Binaries
+/myapp
+*.exe
+
+# VCS
+.git
+.gitignore
+
+# IDEs
+.vscode
+.idea
+
+# OS files
+.DS_Store
+
+# Logs
+*.log

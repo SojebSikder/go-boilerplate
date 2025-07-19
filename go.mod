@@ -1,13 +1,16 @@
-module sojebsikder/go-boilerplate
+module github.com/sojebsikder/go-boilerplate
 
-go 1.24.0
+go 1.24.2
 
 require (
-	github.com/gin-gonic/gin v1.10.0
+	github.com/gin-gonic/gin v1.10.1
+	github.com/golang-jwt/jwt/v5 v5.2.3
+	github.com/google/uuid v1.6.0
 	github.com/joeshaw/envdecode v0.0.0-20200121155833-099f1fc765bd
 	github.com/joho/godotenv v1.5.1
-	gorm.io/driver/postgres v1.5.11
-	gorm.io/gorm v1.26.0
+	golang.org/x/crypto v0.40.0
+	gorm.io/driver/postgres v1.6.0
+	gorm.io/gorm v1.30.0
 )
 
 require (
@@ -21,12 +24,10 @@ require (
 	github.com/go-playground/universal-translator v0.18.1 // indirect
 	github.com/go-playground/validator/v10 v10.20.0 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
-	github.com/golang-jwt/jwt/v5 v5.2.2 // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect
-	github.com/jackc/pgservicefile v0.0.0-20221227161230-091c0ba34f0a // indirect
-	github.com/jackc/pgx/v5 v5.5.5 // indirect
-	github.com/jackc/puddle/v2 v2.2.1 // indirect
+	github.com/jackc/pgservicefile v0.0.0-20240606120523-5a60cdf6a761 // indirect
+	github.com/jackc/pgx/v5 v5.6.0 // indirect
+	github.com/jackc/puddle/v2 v2.2.2 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
@@ -41,11 +42,10 @@ require (
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	github.com/ugorji/go/codec v1.2.12 // indirect
 	golang.org/x/arch v0.8.0 // indirect
-	golang.org/x/crypto v0.38.0 // indirect
-	golang.org/x/net v0.25.0 // indirect
-	golang.org/x/sync v0.14.0 // indirect
-	golang.org/x/sys v0.33.0 // indirect
-	golang.org/x/text v0.25.0 // indirect
+	golang.org/x/net v0.41.0 // indirect
+	golang.org/x/sync v0.16.0 // indirect
+	golang.org/x/sys v0.34.0 // indirect
+	golang.org/x/text v0.27.0 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )

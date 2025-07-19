@@ -1,8 +1,9 @@
-package models
+package model
 
 import (
-	"sojebsikder/go-boilerplate/system/core/ORM"
 	"time"
+
+	"github.com/sojebsikder/go-boilerplate/pkg/ORM"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
