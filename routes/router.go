@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/sojebsikder/go-boilerplate/config"
 	"github.com/sojebsikder/go-boilerplate/internal/app/user"
 	"github.com/sojebsikder/go-boilerplate/internal/auth"
 	"go.uber.org/fx"
@@ -13,7 +14,7 @@ import (
 	"gorm.io/gorm"
 )
 
-func SetupRouter(lc fx.Lifecycle, r *gin.Engine, db *gorm.DB) {
+func SetupRouter(lc fx.Lifecycle, ctg config.Config, r *gin.Engine, db *gorm.DB) {
 
 	auth.RegisterRoutes(r, db)
 	user.RegisterRoutes(r, db)
@@ -24,7 +25,7 @@ func SetupRouter(lc fx.Lifecycle, r *gin.Engine, db *gorm.DB) {
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
 			go func() {
-				if err := r.Run(":8080"); err != nil && err != http.ErrServerClosed {
+				if err := r.Run(":" + ctg.App.Port); err != nil && err != http.ErrServerClosed {
 					fmt.Println("Failed to start server:", err)
 				}
 			}()
