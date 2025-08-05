@@ -4,6 +4,7 @@ import (
 	"os"
 
 	"github.com/joeshaw/envdecode"
+	"go.uber.org/fx"
 )
 
 const (
@@ -86,3 +87,5 @@ func GetConfig() (Config, error) {
 	err := envdecode.StrictDecode(&cfg)
 	return cfg, err
 }
+
+var Module = fx.Module("config", fx.Provide(GetConfig))

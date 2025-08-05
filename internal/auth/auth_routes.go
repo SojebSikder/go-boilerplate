@@ -16,5 +16,4 @@ func RegisterRoutes(r *gin.Engine, db *gorm.DB) {
 
 	routes.POST("/register", handler.Register)
 	routes.POST("/login", handler.Login)
-
 }
