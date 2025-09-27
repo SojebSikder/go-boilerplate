@@ -3,38 +3,30 @@ package auth
 import (
 	"time"
 
-	"github.com/sojebsikder/go-boilerplate/config"
-	"github.com/sojebsikder/go-boilerplate/model"
-	"github.com/sojebsikder/go-boilerplate/pkg/repository"
-
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/sojebsikder/go-boilerplate/internal/config"
+	"github.com/sojebsikder/go-boilerplate/internal/model"
+	"github.com/sojebsikder/go-boilerplate/pkg/repository"
 	"golang.org/x/crypto/bcrypt"
 )
 
-type Service interface {
-	CreateUser(model.User) (model.User, error)
-	GetAllUsers() ([]model.User, error)
-	Login(string, string) (string, error)
-	HashPassword(string) (string, error)
+type AuthService struct {
+	repo *repository.UserRepository
 }
 
-type service struct {
-	repo repository.Repository
+func NewAuthService(repo *repository.UserRepository) *AuthService {
+	return &AuthService{repo}
 }
 
-func NewService(repo repository.Repository) Service {
-	return &service{repo}
-}
-
-func (s *service) CreateUser(user model.User) (model.User, error) {
+func (s *AuthService) CreateUser(user model.User) (model.User, error) {
 	return s.repo.Create(user)
 }
 
-func (s *service) GetAllUsers() ([]model.User, error) {
+func (s *AuthService) GetAllUsers() ([]model.User, error) {
 	return s.repo.FindAll()
 }
 
-func (s *service) Login(email, password string) (string, error) {
+func (s *AuthService) Login(email, password string) (string, error) {
 	user, err := s.repo.FindByEmail(email)
 	if err != nil {
 		return "", err
@@ -57,7 +49,7 @@ func (s *service) Login(email, password string) (string, error) {
 	return tokenString, nil
 }
 
-func (s *service) HashPassword(password string) (string, error) {
+func (s *AuthService) HashPassword(password string) (string, error) {
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), 12)
 	if err != nil {
 		return "", err
@@ -65,18 +57,18 @@ func (s *service) HashPassword(password string) (string, error) {
 	return string(hashedPassword), nil
 }
 
-func (s *service) ComparePassword(hashedPassword, password string) error {
+func (s *AuthService) ComparePassword(hashedPassword, password string) error {
 	if err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password)); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (s *service) UpdateUser(user model.User) (model.User, error) {
+func (s *AuthService) UpdateUser(user model.User) (model.User, error) {
 	return s.repo.Update(user)
 }
 
-func (s *service) DeleteUser(id string) error {
+func (s *AuthService) DeleteUser(id string) error {
 	user, err := s.repo.FindByID(id)
 	if err != nil {
 		return err

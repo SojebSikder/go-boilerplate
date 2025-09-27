@@ -5,9 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/sojebsikder/go-boilerplate/config"
-	"github.com/sojebsikder/go-boilerplate/internal/app/user"
-	"github.com/sojebsikder/go-boilerplate/internal/auth"
+	"github.com/sojebsikder/go-boilerplate/internal/config"
 	"go.uber.org/fx"
 
 	"github.com/gin-gonic/gin"
@@ -16,8 +14,6 @@ import (
 
 func SetupRouter(lc fx.Lifecycle, ctg config.Config, r *gin.Engine, db *gorm.DB) {
 
-	auth.RegisterRoutes(r, db)
-	user.RegisterRoutes(r, db)
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"message": "Test route is working!"})
 	})

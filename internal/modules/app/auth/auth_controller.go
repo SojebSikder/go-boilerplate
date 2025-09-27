@@ -3,21 +3,20 @@ package auth
 import (
 	"net/http"
 
-	"github.com/sojebsikder/go-boilerplate/model"
-
 	"github.com/gin-gonic/gin"
+	"github.com/sojebsikder/go-boilerplate/internal/model"
 	"golang.org/x/crypto/bcrypt"
 )
 
-type Handler struct {
-	service Service
+type AuthController struct {
+	service *AuthService
 }
 
-func NewHandler(service Service) *Handler {
-	return &Handler{service}
+func NewAuthController(service *AuthService) *AuthController {
+	return &AuthController{service}
 }
 
-func (h *Handler) Register(c *gin.Context) {
+func (h *AuthController) Register(c *gin.Context) {
 	var body struct {
 		Name     string `json:"name"`
 		Email    string `json:"email"`
@@ -48,7 +47,7 @@ func (h *Handler) Register(c *gin.Context) {
 	c.JSON(http.StatusCreated, created)
 }
 
-func (h *Handler) Login(c *gin.Context) {
+func (h *AuthController) Login(c *gin.Context) {
 	var body struct {
 		Email    string `json:"email"`
 		Password string `json:"password"`

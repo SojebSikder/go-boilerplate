@@ -3,7 +3,7 @@ package ORM
 import (
 	"fmt"
 
-	"github.com/sojebsikder/go-boilerplate/config"
+	"github.com/sojebsikder/go-boilerplate/internal/config"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
