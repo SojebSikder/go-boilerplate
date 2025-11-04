@@ -8,21 +8,25 @@ import (
 )
 
 type UserController struct {
-	service *UserService
+	userService *UserService
 }
 
-func NewUserController(service *UserService) *UserController {
-	return &UserController{service}
+func NewUserController(
+	userService *UserService,
+) *UserController {
+	return &UserController{
+		userService: userService,
+	}
 }
 
 func (h *UserController) Create(c *gin.Context) {
 	var user model.User
-	if err := c.ShouldBindJSON(&user); err != nil {
+	if err := c.ShouldBind(&user); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	created, err := h.service.CreateUser(user)
+	created, err := h.userService.CreateUser(user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -31,7 +35,7 @@ func (h *UserController) Create(c *gin.Context) {
 }
 
 func (h *UserController) GetAll(c *gin.Context) {
-	users, err := h.service.GetAllUsers()
+	users, err := h.userService.GetAllUsers()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

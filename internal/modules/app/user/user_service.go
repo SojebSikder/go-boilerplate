@@ -2,7 +2,7 @@ package user
 
 import (
 	"github.com/sojebsikder/go-boilerplate/internal/model"
-	"github.com/sojebsikder/go-boilerplate/pkg/repository"
+	"github.com/sojebsikder/go-boilerplate/internal/repository"
 )
 
 type UserService struct {

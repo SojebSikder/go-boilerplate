@@ -1,14 +1,12 @@
 package user
 
 import (
-	"github.com/sojebsikder/go-boilerplate/pkg/middleware"
-
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
+	"github.com/sojebsikder/go-boilerplate/internal/middleware"
 )
 
-func RegisterRoutes(r *gin.Engine, db *gorm.DB, c *UserController) {
-	routes := r.Group("/users")
+func RegisterRoutes(r *gin.Engine, c *UserController) {
+	routes := r.Group("/api/users")
 	routes.Use(middleware.AuthMiddleware())
 	routes.POST("/", c.Create)
 	routes.GET("/", c.GetAll)

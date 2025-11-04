@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 
+	"github.com/sojebsikder/go-boilerplate/cmd/migrate"
 	"github.com/sojebsikder/go-boilerplate/cmd/server"
 	"github.com/spf13/cobra"
 )
@@ -18,6 +19,7 @@ var RootCmd = &cobra.Command{
 
 func main() {
 	RootCmd.AddCommand(server.ServerCmd)
+	RootCmd.AddCommand(migrate.MigrateCmd)
 	RootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose output")
 
 	if err := RootCmd.Execute(); err != nil {

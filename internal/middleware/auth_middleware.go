@@ -17,7 +17,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
-		ctg, _ := config.GetConfig()
+		ctg, _ := config.NewConfig()
 		JWT_SECRET := []byte(ctg.Security.JWTKey)
 
 		token, _ := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {

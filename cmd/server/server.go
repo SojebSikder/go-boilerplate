@@ -1,20 +1,17 @@
 package server
 
 import (
-	"log"
-
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 	"github.com/sojebsikder/go-boilerplate/internal/config"
-	"github.com/sojebsikder/go-boilerplate/internal/model"
+	"github.com/sojebsikder/go-boilerplate/internal/middleware"
 	"github.com/sojebsikder/go-boilerplate/internal/modules/app/auth"
 	"github.com/sojebsikder/go-boilerplate/internal/modules/app/user"
+	"github.com/sojebsikder/go-boilerplate/internal/repository"
 	"github.com/sojebsikder/go-boilerplate/internal/routes"
 	"github.com/sojebsikder/go-boilerplate/pkg/ORM"
-	"github.com/sojebsikder/go-boilerplate/pkg/repository"
+
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
-	"gorm.io/gorm"
 )
 
 var ServerCmd = &cobra.Command{
@@ -26,11 +23,6 @@ var ServerCmd = &cobra.Command{
 }
 
 func StartServer() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
 	app := fx.New(
 		config.Module,
 		auth.Module,
@@ -41,20 +33,22 @@ func StartServer() {
 			ORM.Init,
 		),
 		fx.Invoke(
-			AutoMigrate,
 			routes.SetupRouter,
 		),
 	)
 	app.Run()
 }
 
-func GinServer() *gin.Engine {
+func GinServer(cfg *config.Config) *gin.Engine {
 	r := gin.Default()
-	r.Static("/static", "./"+config.StaticDir)
-	r.LoadHTMLGlob(config.TemplateDir + "/*")
-	return r
-}
 
-func AutoMigrate(db *gorm.DB) {
-	db.AutoMigrate(&model.User{})
+	// Apply global middleware
+	r.Use(middleware.CorsMiddleware())
+	r.Use(middleware.RateLimiterMiddleware())
+
+	// Serve static files and templates
+	r.Static("/static", "./"+cfg.App.StaticDir)
+	r.LoadHTMLGlob(cfg.App.TemplateDir + "/*")
+
+	return r
 }

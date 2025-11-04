@@ -1,37 +1,63 @@
 package auth
 
 import (
+	"net/http"
 	"time"
 
-	"github.com/golang-jwt/jwt/v5"
+	"github.com/gin-gonic/gin"
+	"github.com/golang-jwt/jwt/v4"
 	"github.com/sojebsikder/go-boilerplate/internal/config"
 	"github.com/sojebsikder/go-boilerplate/internal/model"
-	"github.com/sojebsikder/go-boilerplate/pkg/repository"
+	"github.com/sojebsikder/go-boilerplate/internal/repository"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type AuthService struct {
-	repo *repository.UserRepository
+	userRepo *repository.UserRepository
+	config   *config.Config
 }
 
-func NewAuthService(repo *repository.UserRepository) *AuthService {
-	return &AuthService{repo}
+func NewAuthService(
+	userRepo *repository.UserRepository,
+	config *config.Config,
+) *AuthService {
+	return &AuthService{
+		userRepo: userRepo,
+		config:   config,
+	}
 }
 
-func (s *AuthService) CreateUser(user model.User) (model.User, error) {
-	return s.repo.Create(user)
+func (s *AuthService) CreateUser(ctx *gin.Context, req *AuthRegisterRequest) (model.User, error) {
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), 12)
+	if err != nil {
+		ctx.JSON(
+			http.StatusInternalServerError,
+			gin.H{"error": "Failed to hash password"},
+		)
+		return model.User{}, err
+	}
+
+	hashedPasswordStr := string(hashedPassword)
+
+	user := model.User{
+		Name:     &req.Name,
+		Email:    &req.Email,
+		Password: &hashedPasswordStr,
+	}
+
+	return s.userRepo.Create(user)
 }
 
 func (s *AuthService) GetAllUsers() ([]model.User, error) {
-	return s.repo.FindAll()
+	return s.userRepo.FindAll()
 }
 
-func (s *AuthService) Login(email, password string) (string, error) {
-	user, err := s.repo.FindByEmail(email)
+func (s *AuthService) Login(ctx *gin.Context, email, password string) (string, error) {
+	user, err := s.userRepo.FindByEmail(email)
 	if err != nil {
 		return "", err
 	}
-	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password)); err != nil {
+	if err := bcrypt.CompareHashAndPassword([]byte(*user.Password), []byte(password)); err != nil {
 		return "", err
 	}
 
@@ -40,8 +66,7 @@ func (s *AuthService) Login(email, password string) (string, error) {
 		"exp":     jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
 	})
 
-	ctg, _ := config.GetConfig()
-	tokenString, err := token.SignedString([]byte(ctg.Security.JWTKey))
+	tokenString, err := token.SignedString([]byte(s.config.Security.JWTKey))
 	if err != nil {
 		return "", err
 	}
@@ -64,14 +89,14 @@ func (s *AuthService) ComparePassword(hashedPassword, password string) error {
 	return nil
 }
 
-func (s *AuthService) UpdateUser(user model.User) (model.User, error) {
-	return s.repo.Update(user)
+func (s *AuthService) UpdateUser(ctx *gin.Context, user model.User) (model.User, error) {
+	return s.userRepo.Update(user)
 }
 
-func (s *AuthService) DeleteUser(id string) error {
-	user, err := s.repo.FindByID(id)
+func (s *AuthService) DeleteUser(ctx *gin.Context, id string) error {
+	user, err := s.userRepo.FindByID(id)
 	if err != nil {
 		return err
 	}
-	return s.repo.Delete(user)
+	return s.userRepo.Delete(user)
 }

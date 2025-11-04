@@ -2,11 +2,10 @@ package auth
 
 import (
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
-func RegisterRoutes(r *gin.Engine, db *gorm.DB, c *AuthController) {
-	routes := r.Group("/auth")
+func RegisterRoutes(r *gin.Engine, c *AuthController) {
+	routes := r.Group("/api/auth")
 
 	routes.POST("/register", c.Register)
 	routes.POST("/login", c.Login)

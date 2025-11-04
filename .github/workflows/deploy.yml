@@ -1,0 +1,32 @@
+name: Deploy Go App
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Install dependencies
+        run: |
+          go mod tidy
+
+      - name: Build application
+        run: go build -o /var/www/backend/app ./cmd/main.go
+
+      - name: Copy environment file
+        run: cp /var/www/backend/.env .env
+
+      - name: Migrate goose schema
+        run: /var/www/backend/app migrate up
+
+      - name: Restart application
+        run: sudo systemctl restart goapp

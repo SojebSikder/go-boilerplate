@@ -9,13 +9,12 @@ import (
 	"go.uber.org/fx"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
-func SetupRouter(lc fx.Lifecycle, ctg config.Config, r *gin.Engine, db *gorm.DB) {
+func SetupRouter(lc fx.Lifecycle, ctg *config.Config, r *gin.Engine) {
 
 	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "Test route is working!"})
+		c.JSON(http.StatusOK, gin.H{"message": "Service is running!"})
 	})
 
 	lc.Append(fx.Hook{
