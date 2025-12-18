@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"net/http"
+	"errors"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -28,23 +28,22 @@ func NewAuthService(
 }
 
 func (s *AuthService) CreateUser(ctx *gin.Context, req *AuthRegisterRequest) (model.User, error) {
+	// Check if user already exists
+	if _, err := s.userRepo.FindByEmail(req.Email); err == nil {
+		return model.User{}, errors.New("User with this email already exists")
+	}
+
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), 12)
 	if err != nil {
-		ctx.JSON(
-			http.StatusInternalServerError,
-			gin.H{"error": "Failed to hash password"},
-		)
-		return model.User{}, err
+		return model.User{}, errors.New("Failed to hash password")
 	}
 
 	hashedPasswordStr := string(hashedPassword)
-
 	user := model.User{
 		Name:     &req.Name,
 		Email:    &req.Email,
 		Password: &hashedPasswordStr,
 	}
-
 	return s.userRepo.Create(user)
 }
 
@@ -66,7 +65,7 @@ func (s *AuthService) Login(ctx *gin.Context, email, password string) (string, e
 		"exp":     jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
 	})
 
-	tokenString, err := token.SignedString([]byte(s.config.Security.JWTKey))
+	tokenString, err := token.SignedString([]byte(s.config.Security.JWTSecret))
 	if err != nil {
 		return "", err
 	}

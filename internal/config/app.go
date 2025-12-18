@@ -2,6 +2,7 @@ package config
 
 import (
 	"log"
+	"time"
 
 	"github.com/joeshaw/envdecode"
 	"github.com/joho/godotenv"
@@ -9,10 +10,13 @@ import (
 )
 
 type Config struct {
-	App      AppConfig
-	Database DatabaseConfig
-	Security SecurityConfig
-	Mail     MailConfig
+	App       AppConfig
+	Database  DatabaseConfig
+	S3        AWSConfig
+	Redis     RedisConfig
+	Security  SecurityConfig
+	Mail      MailConfig
+	RateLimit RateLimitConfig
 }
 
 type AppConfig struct {
@@ -28,8 +32,22 @@ type DatabaseConfig struct {
 	DatabaseURL string `env:"DATABASE_URL,default=postgres://user:pass@localhost:5432/testdemo"`
 }
 
+type AWSConfig struct {
+	AWSAccessKeyID     string `env:"AWS_ACCESS_KEY_ID"`
+	AWSSecretAccessKey string `env:"AWS_SECRET_ACCESS_KEY"`
+	AWSRegion          string `env:"AWS_REGION,default=us-east-1"`
+	AWSBucket          string `env:"AWS_BUCKET"`
+	AWSURL             string `env:"AWS_URL"`
+	AWSEndpoint        string `env:"AWS_ENDPOINT"`
+}
+
+type RedisConfig struct {
+	RedisURL string `env:"REDIS_URL,default=localhost:6379"`
+	Password string `env:"REDIS_PASSWORD,default=secret"`
+}
+
 type SecurityConfig struct {
-	JWTKey string `env:"JWT_KEY,default=secret"`
+	JWTSecret string `env:"JWT_SECRET,default=secret"`
 }
 
 type MailConfig struct {
@@ -38,6 +56,11 @@ type MailConfig struct {
 	User        string `env:"MAIL_USERNAME,default=admin"`
 	Password    string `env:"MAIL_PASSWORD,default=admin"`
 	FromAddress string `env:"MAIL_FROM_ADDRESS,default=admin@localhost"`
+}
+
+type RateLimitConfig struct {
+	RateLimitMaxRequests int64         `env:"RATE_LIMIT_MAX_REQUESTS,default=10"`
+	RateLimitDuration    time.Duration `env:"RATE_LIMIT_DURATION,default=1m"`
 }
 
 func NewConfig() (*Config, error) {

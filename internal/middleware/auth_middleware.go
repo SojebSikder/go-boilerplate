@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/sojebsikder/go-boilerplate/internal/config"
 
@@ -11,16 +12,22 @@ import (
 
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		tokenString := c.GetHeader("Authorization")
-		if tokenString == "" {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Missing token"})
+		authHeader := c.GetHeader("Authorization")
+		if authHeader == "" {
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"message": "You are not authorized. Please login",
+				"success": false,
+			})
 			return
 		}
 
-		ctg, _ := config.NewConfig()
-		JWT_SECRET := []byte(ctg.Security.JWTKey)
+		tokenString := strings.TrimPrefix(authHeader, "Bearer ")
+		tokenString = strings.TrimSpace(tokenString)
 
-		token, _ := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		ctg, _ := config.NewConfig()
+		JWT_SECRET := []byte(ctg.Security.JWTSecret)
+
+		token, _ := jwt.Parse(tokenString, func(token *jwt.Token) (any, error) {
 			return JWT_SECRET, nil
 		})
 
@@ -28,7 +35,10 @@ func AuthMiddleware() gin.HandlerFunc {
 			c.Set("user_id", claims["user_id"])
 			c.Next()
 		} else {
-			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Invalid token"})
+			c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+				"message": "Invalid token",
+				"success": false,
+			})
 		}
 	}
 }

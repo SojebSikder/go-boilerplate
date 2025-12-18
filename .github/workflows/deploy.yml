@@ -15,6 +15,13 @@ jobs:
           ref: main
           fetch-depth: 0
 
+      - name: Pull latest code
+        run: |
+          cd /var/www/backend
+          git fetch --all
+          git reset --hard origin/main
+          git pull origin main
+
       - name: Install dependencies
         run: |
           go mod tidy

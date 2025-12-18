@@ -13,7 +13,7 @@ import (
 //	type User struct {
 //	  gorm.Model
 //	}
-type Model struct {
+type BaseModel struct {
 	ID        uuid.UUID      `gorm:"type:uuid;primaryKey;default:gen_random_uuid()" json:"id"`
 	CreatedAt time.Time      `gorm:"autoCreateTime" json:"created_at"`
 	UpdatedAt time.Time      `gorm:"autoUpdateTime" json:"updated_at"`

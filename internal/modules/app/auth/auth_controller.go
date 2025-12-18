@@ -22,31 +22,67 @@ func (h *AuthController) Register(ctx *gin.Context) {
 	var req AuthRegisterRequest
 
 	if err := ctx.ShouldBind(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid request",
+			"success": false,
+		})
 		return
 	}
 
-	created, err := h.authService.CreateUser(ctx, &req)
-	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if err := req.Validate(); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+			"success": false,
+		})
 		return
 	}
-	ctx.JSON(http.StatusCreated, created)
+
+	_, err := h.authService.CreateUser(ctx, &req)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+			"success": false,
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusCreated, gin.H{
+		"message": "Account created successfully",
+		"success": true,
+	})
 }
 
 func (h *AuthController) Login(ctx *gin.Context) {
 	var req AuthRequest
 
 	if err := ctx.ShouldBind(&req); err != nil {
-		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": "Invalid input",
+			"success": false,
+		})
+		return
+	}
+
+	if err := req.Validate(); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{
+			"message": err.Error(),
+			"success": false,
+		})
 		return
 	}
 
 	token, loginErr := h.authService.Login(ctx, req.Email, req.Password)
-
 	if loginErr != nil {
-		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		ctx.JSON(http.StatusUnauthorized, gin.H{
+			"message": "Invalid credentials",
+			"success": false,
+		})
 		return
 	}
-	ctx.JSON(http.StatusOK, gin.H{"message": "Login successful", "token": token})
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Login successful",
+		"success": true,
+		"token":   token,
+	})
 }

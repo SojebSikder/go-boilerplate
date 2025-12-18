@@ -8,8 +8,7 @@ import (
 )
 
 type User struct {
-	Model
-
+	BaseModel
 	Status       int        `gorm:"default:1" json:"status"`
 	ApprovedAt   *time.Time `json:"approved_at"`
 	Availability *string    `json:"availability"`

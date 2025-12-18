@@ -9,6 +9,9 @@ import (
 	"github.com/sojebsikder/go-boilerplate/internal/repository"
 	"github.com/sojebsikder/go-boilerplate/internal/routes"
 	"github.com/sojebsikder/go-boilerplate/pkg/ORM"
+	utils "github.com/sojebsikder/go-boilerplate/pkg/ratelimitter"
+	"github.com/sojebsikder/go-boilerplate/pkg/redis"
+	s3Client "github.com/sojebsikder/go-boilerplate/pkg/s3client"
 
 	"github.com/spf13/cobra"
 	"go.uber.org/fx"
@@ -25,12 +28,15 @@ var ServerCmd = &cobra.Command{
 func StartServer() {
 	app := fx.New(
 		config.Module,
+		redis.Module,
+		s3Client.Module,
 		auth.Module,
 		user.Module,
 		repository.Module,
 		fx.Provide(
 			GinServer,
 			ORM.Init,
+			utils.NewRateLimiter,
 		),
 		fx.Invoke(
 			routes.SetupRouter,
@@ -39,12 +45,12 @@ func StartServer() {
 	app.Run()
 }
 
-func GinServer(cfg *config.Config) *gin.Engine {
+func GinServer(cfg *config.Config, rateLimiter *utils.RateLimiter) *gin.Engine {
 	r := gin.Default()
 
 	// Apply global middleware
 	r.Use(middleware.CorsMiddleware())
-	r.Use(middleware.RateLimiterMiddleware())
+	r.Use(rateLimiter.Limit())
 
 	// Serve static files and templates
 	r.Static("/static", "./"+cfg.App.StaticDir)
