@@ -61,7 +61,7 @@ services:
     ports:
       - "9090:9090"
     volumes:
-      - ../monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./deploy/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
       - prometheus_data:/prometheus
     environment:
       - PROMETHEUS_STORAGE_LOCAL_PATH=/prometheus
@@ -73,7 +73,7 @@ services:
     ports:
       - "3100:3100"
     volumes:
-      - ../monitoring/loki/loki-config.yml:/mnt/config/loki-config.yml # <local-path> → ./config
+      - ./deploy/monitoring/loki/loki-config.yml:/mnt/config/loki-config.yml # <local-path> → ./config
     command: --config.file=/mnt/config/loki-config.yml
     restart: always
 
@@ -83,7 +83,7 @@ services:
     depends_on:
       - loki
     volumes:
-      - ../monitoring/promtail/promtail-config.yml:/mnt/config/promtail-config.yml # <local-path> → same local path
+      - ./deploy/monitoring/promtail/promtail-config.yml:/mnt/config/promtail-config.yml # <local-path> → same local path
       - ./logs:/var/log
     command: --config.file=/mnt/config/promtail-config.yml
     restart: always
