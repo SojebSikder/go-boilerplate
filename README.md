@@ -18,12 +18,12 @@ go run cmd/main.go server
 ## Running using Docker (for development)
 
 ```
-docker compose -f docker-compose.yml up -d redis postgres prometheus grafana loki promtail node_exporter rustfs --build
+docker compose -f docker-compose.prod.yml up -d redis postgres prometheus grafana loki promtail node_exporter rustfs --build
 ```
 ## Running using Docker (for production)
 
 ```
-docker compose -f docker-compose.yml --profile prod up --remove-orphans --force-recreate --build -d
+docker compose -f docker-compose.prod.yml --profile prod up --remove-orphans --force-recreate --build -d
 ```
 
 ## Technology used

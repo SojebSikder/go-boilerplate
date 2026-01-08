@@ -16,9 +16,10 @@ services:
     restart: always
     profiles: ["prod"]
     stop_grace_period: 30s
+    command: sh -c "./myapp migrate up && ./myapp server"
     volumes:
-      - ./.env.prod:/usr/src/app/.env:ro
-      - ./logs:/usr/src/app/logs
+      - ./.env.prod:/app/.env:ro
+      - ./logs:/app/logs
 
   postgres:
     image: postgres:16

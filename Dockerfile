@@ -14,5 +14,3 @@ COPY . .
 RUN go build -o myapp ./cmd/main.go
 
 EXPOSE 4000
-
-CMD ["./myapp"]
