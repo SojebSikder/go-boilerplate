@@ -15,6 +15,17 @@ Running server
 go run cmd/main.go server
 ```
 
+## Running using Docker (for development)
+
+```
+docker compose -f deploy/docker/docker-compose.yaml up -d redis postgres prometheus grafana loki promtail node_exporter rustfs --build
+```
+## Running using Docker (for production)
+
+```
+docker docker compose -f deploy/docker/docker-compose.yaml --profile prod up --remove-orphans --force-recreate --build -d
+```
+
 ## Technology used
 
 - Gin – High-performance HTTP web framework
