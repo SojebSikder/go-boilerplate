@@ -21,6 +21,28 @@ services:
       - ./.env.prod:/app/.env:ro
       - ./logs:/app/logs
 
+  backend_green:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: prod
+    image: backend:1.0.1
+    container_name: backend_green
+    ports:
+      - "4002:4000"
+    environment:
+      NODE_ENV: production
+    # depends_on:
+    #   - postgres
+    #   - redis
+    restart: always
+    profiles: ["prod"]
+    stop_grace_period: 30s
+    command: sh -c "./myapp migrate up && ./myapp server"
+    volumes:
+      - ./.env.prod:/app/.env:ro
+      - ./logs:/app/logs
+
   postgres:
     image: postgres:16
     container_name: postgres
