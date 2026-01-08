@@ -1,0 +1,86 @@
+name: Blue-Green Deploy Backend
+
+# on:
+#   push:
+#     branches:
+#       - main
+
+on: workflow_dispatch
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    env:
+      APP_NAME: backend
+      BLUE_PORT: 4001
+      GREEN_PORT: 4002
+      NGINX_UPSTREAM: /etc/nginx/conf.d/backend_upstream.conf
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Check whoami
+        run: |
+          echo "Whoami: $(whoami)"
+
+      - name: Pull latest code
+        run: |
+          cd /var/www/backend
+          git fetch --all
+          git reset --hard origin/main
+          git pull origin main
+
+      - name: Detect active environment
+        id: active
+        run: |
+          if grep -q "4001" $NGINX_UPSTREAM; then
+            echo "ACTIVE=blue" >> $GITHUB_ENV
+            echo "INACTIVE=green" >> $GITHUB_ENV
+            echo "NEW_PORT=$GREEN_PORT" >> $GITHUB_ENV
+          else
+            echo "ACTIVE=green" >> $GITHUB_ENV
+            echo "INACTIVE=blue" >> $GITHUB_ENV
+            echo "NEW_PORT=$BLUE_PORT" >> $GITHUB_ENV
+          fi
+
+      - name: Start inactive environment
+        run: |
+          cd /var/www/backend
+          docker compose -f docker-compose.prod.yaml --profile prod up --remove-orphans --force-recreate --build ${APP_NAME}_${INACTIVE} -d
+
+      - name: Health check new environment
+        run: |
+          echo "Waiting for app to be healthy..."
+          echo "PORT=$NEW_PORT"
+          for i in {1..30}; do
+            if curl -sf http://127.0.0.1:$NEW_PORT/health; then
+              echo "Healthy"
+              exit 0
+            fi
+            sleep 3
+          done
+          echo "Health check failed"
+          exit 1
+
+      - name: Switch NGINX upstream
+        run: |
+          cat <<EOF | sudo tee /etc/nginx/conf.d/backend_upstream.conf > /dev/null
+          upstream backend_upstream {
+              server 127.0.0.1:$NEW_PORT;
+          }
+          EOF
+
+          sudo nginx -t
+          sudo nginx -s reload
+
+      - name: Stop old environment
+        run: |
+          cd /var/www/backend
+          docker compose -f docker-compose.prod.yaml --profile prod stop ${APP_NAME}_${ACTIVE}
+          docker compose -f docker-compose.prod.yaml --profile prod rm -f ${APP_NAME}_${ACTIVE}
+
+      - name: Cleanup unused images
+        run: |
+          docker image prune -f

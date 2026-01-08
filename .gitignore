@@ -20,3 +20,4 @@ ent/*
 
 # env file
 .env
+.env.prod

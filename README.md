@@ -22,4 +22,11 @@ go run cmd/main.go server
 - Goose - Migration management
 - Uber Fx – Dependency injection and application lifecycle management
 - Cobra – Command-line application framework
+- Zap – Logging framework
+- Postgres – Relational database management system
 - Docker – Containerization platform
+
+Monitoring and logging
+- Prometheus – Metrics collection and monitoring system
+- Loki – Log aggregation and storage system
+- Grafana – Visualization and dashboarding tool

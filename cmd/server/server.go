@@ -9,6 +9,7 @@ import (
 	"github.com/sojebsikder/go-boilerplate/internal/repository"
 	"github.com/sojebsikder/go-boilerplate/internal/routes"
 	"github.com/sojebsikder/go-boilerplate/pkg/ORM"
+	"github.com/sojebsikder/go-boilerplate/pkg/logger"
 	utils "github.com/sojebsikder/go-boilerplate/pkg/ratelimitter"
 	"github.com/sojebsikder/go-boilerplate/pkg/redis"
 	s3Client "github.com/sojebsikder/go-boilerplate/pkg/s3client"
@@ -27,12 +28,16 @@ var ServerCmd = &cobra.Command{
 
 func StartServer() {
 	app := fx.New(
+		// common modules
+		logger.Module,
 		config.Module,
 		redis.Module,
 		s3Client.Module,
+		// app module
 		auth.Module,
 		user.Module,
 		repository.Module,
+		//
 		fx.Provide(
 			GinServer,
 			ORM.Init,

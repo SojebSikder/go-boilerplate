@@ -5,16 +5,29 @@ import (
 	"fmt"
 	"net/http"
 
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sojebsikder/go-boilerplate/internal/config"
+	"github.com/sojebsikder/go-boilerplate/internal/middleware"
+	"github.com/sojebsikder/go-boilerplate/internal/modules/metrics"
 	"go.uber.org/fx"
+	"go.uber.org/zap"
 
 	"github.com/gin-gonic/gin"
 )
 
-func SetupRouter(lc fx.Lifecycle, ctg *config.Config, r *gin.Engine) {
+func SetupRouter(lc fx.Lifecycle, ctg *config.Config, r *gin.Engine, log *zap.Logger) {
+	// logger
+	r.Use(middleware.RequestID())
+	r.Use(middleware.RequestLogger(log))
 
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{"message": "Service is running!"})
+	// prometheus metrics
+	metrics.Register()
+	r.Use(middleware.Prometheus())
+	r.GET("/metrics", gin.WrapH(promhttp.Handler()))
+
+	r.GET("/health", func(c *gin.Context) {
+		log.Info("health_check")
+		c.JSON(200, gin.H{"status": "ok"})
 	})
 
 	lc.Append(fx.Hook{
