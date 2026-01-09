@@ -23,7 +23,6 @@ func NewRedis(config *config.Config) (*Redis, error) {
 	client := redis.NewClient(&opts)
 
 	if err := client.Ping(context.Background()).Err(); err != nil {
-		fmt.Println("password", config.Redis.Password)
 		return nil, fmt.Errorf("failed to connect to redis: %w", err)
 	}
 
