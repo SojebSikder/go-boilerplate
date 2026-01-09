@@ -17,9 +17,9 @@ func NewRedis(config *config.Config) (*Redis, error) {
 	opts := redis.Options{
 		Addr: config.Redis.RedisURL,
 	}
-	// if config.Redis.Password != "" {
-	// 	opts.Password = config.Redis.Password
-	// }
+	if config.Redis.Password != "" {
+		opts.Password = config.Redis.Password
+	}
 	client := redis.NewClient(&opts)
 
 	if err := client.Ping(context.Background()).Err(); err != nil {

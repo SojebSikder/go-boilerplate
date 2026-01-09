@@ -21,3 +21,5 @@ ent/*
 # env file
 .env
 .env.prod
+
+logs/*
