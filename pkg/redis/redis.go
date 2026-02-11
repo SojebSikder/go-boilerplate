@@ -14,13 +14,8 @@ type Redis struct {
 }
 
 func NewRedis(config *config.Config) (*Redis, error) {
-	opts := redis.Options{
-		Addr: config.Redis.RedisURL,
-	}
-	if config.Redis.Password != "" {
-		opts.Password = config.Redis.Password
-	}
-	client := redis.NewClient(&opts)
+	opt, _ := redis.ParseURL(config.Redis.RedisURL)
+	client := redis.NewClient(opt)
 
 	if err := client.Ping(context.Background()).Err(); err != nil {
 		return nil, fmt.Errorf("failed to connect to redis: %w", err)

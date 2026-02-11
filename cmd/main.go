@@ -6,6 +6,7 @@ import (
 
 	"github.com/sojebsikder/go-boilerplate/cmd/migrate"
 	"github.com/sojebsikder/go-boilerplate/cmd/server"
+	"github.com/sojebsikder/go-boilerplate/cmd/worker"
 	"github.com/spf13/cobra"
 )
 
@@ -19,6 +20,7 @@ var RootCmd = &cobra.Command{
 
 func main() {
 	RootCmd.AddCommand(server.ServerCmd)
+	RootCmd.AddCommand(worker.WorkerCmd)
 	RootCmd.AddCommand(migrate.MigrateCmd)
 	RootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Enable verbose output")
 

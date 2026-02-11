@@ -18,6 +18,23 @@ func NewAuthController(
 	}
 }
 
+func (h *AuthController) Hello(ctx *gin.Context) {
+	result, err := h.authService.Hello(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+			"success": false,
+		})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"message": "Data fetched successful",
+		"success": true,
+		"data":    result,
+	})
+}
+
 func (h *AuthController) Register(ctx *gin.Context) {
 	var req AuthRegisterRequest
 

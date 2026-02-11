@@ -4,6 +4,6 @@ import (
 	"go.uber.org/fx"
 )
 
-var Module = fx.Module("modules", fx.Provide(
+var Module = fx.Module("s3client", fx.Provide(
 	NewS3Client,
 ))

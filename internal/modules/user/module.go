@@ -6,8 +6,6 @@ import (
 
 var Module = fx.Module("user",
 	fx.Provide(
-		NewUserController,
 		NewUserService,
 	),
-	fx.Invoke(RegisterRoutes),
 )

@@ -1,30 +1,61 @@
 package auth
 
 import (
+	"context"
 	"errors"
+	"fmt"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/hibiken/asynq"
 	"github.com/sojebsikder/go-boilerplate/internal/config"
 	"github.com/sojebsikder/go-boilerplate/internal/model"
+	authtask "github.com/sojebsikder/go-boilerplate/internal/modules/auth/task"
 	"github.com/sojebsikder/go-boilerplate/internal/repository"
+	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type AuthService struct {
-	userRepo *repository.UserRepository
-	config   *config.Config
+	logger      *zap.Logger
+	userRepo    *repository.UserRepository
+	config      *config.Config
+	asynqClient *asynq.Client
 }
 
 func NewAuthService(
+	logger *zap.Logger,
 	userRepo *repository.UserRepository,
 	config *config.Config,
+	asynqClient *asynq.Client,
 ) *AuthService {
 	return &AuthService{
-		userRepo: userRepo,
-		config:   config,
+		logger:      logger,
+		userRepo:    userRepo,
+		config:      config,
+		asynqClient: asynqClient,
 	}
+}
+
+func (s *AuthService) Hello(ctx context.Context) (string, error) {
+	// add task to queue
+	task, err := authtask.NewAuthTask("Sojeb")
+	if err != nil {
+		s.logger.Error("failed to create task", zap.Error(err))
+		return "", errors.New("failed to create task")
+	}
+
+	_, err = s.asynqClient.Enqueue(task,
+		asynq.Queue("critical"),
+		// asynq.MaxRetry(1),
+		asynq.Timeout(30*time.Second),
+	)
+	if err != nil {
+		s.logger.Error("failed to enqueue task", zap.Error(err))
+		return "", errors.New("failed to enqueue task")
+	}
+	return fmt.Sprintf("Hello, %s!", "World"), nil
 }
 
 func (s *AuthService) CreateUser(ctx *gin.Context, req *AuthRegisterRequest) (model.User, error) {

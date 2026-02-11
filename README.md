@@ -15,15 +15,36 @@ Running server
 go run cmd/main.go server
 ```
 
+Running worker
+```bash
+go run cmd/main.go worker
+```
+
+Or Running server
+```bash
+air
+```
+
+## Check fieldalignment
+```bash
+fieldalignment ./...
+```
+
+## Fix fieldalignment
+```bash
+fieldalignment -fix ./...
+```
+
+
 ## Running using Docker (for development)
 
 ```
-docker compose -f docker-compose.prod.yml up -d redis postgres prometheus grafana loki promtail node_exporter rustfs --build
+docker compose -f docker-compose.yml up -d redis postgres prometheus grafana loki promtail node_exporter rustfs --build
 ```
 ## Running using Docker (for production)
 
 ```
-docker compose -f docker-compose.prod.yml --profile prod up --remove-orphans --force-recreate --build -d
+docker compose -f docker-compose.yml --profile prod up --remove-orphans --force-recreate --build -d
 ```
 
 ## Technology used
@@ -34,6 +55,7 @@ docker compose -f docker-compose.prod.yml --profile prod up --remove-orphans --f
 - Uber Fx – Dependency injection and application lifecycle management
 - Cobra – Command-line application framework
 - Zap – Logging framework
+- Asynq – Asynchronous task queue
 - Postgres – Relational database management system
 - Docker – Containerization platform
 

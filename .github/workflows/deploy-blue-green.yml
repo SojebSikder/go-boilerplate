@@ -48,7 +48,7 @@ jobs:
       - name: Start inactive environment
         run: |
           cd /var/www/backend
-          docker compose -f docker-compose.prod.yaml --profile prod up --remove-orphans --force-recreate --build ${APP_NAME}_${INACTIVE} -d
+          docker compose -f docker-compose.yaml --profile prod up --remove-orphans --force-recreate --build ${APP_NAME}_${INACTIVE} -d
 
       - name: Health check new environment
         run: |
@@ -78,8 +78,8 @@ jobs:
       - name: Stop old environment
         run: |
           cd /var/www/backend
-          docker compose -f docker-compose.prod.yaml --profile prod stop ${APP_NAME}_${ACTIVE}
-          docker compose -f docker-compose.prod.yaml --profile prod rm -f ${APP_NAME}_${ACTIVE}
+          docker compose -f docker-compose.yaml --profile prod stop ${APP_NAME}_${ACTIVE}
+          docker compose -f docker-compose.yaml --profile prod rm -f ${APP_NAME}_${ACTIVE}
 
       - name: Cleanup unused images
         run: |

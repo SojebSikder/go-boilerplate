@@ -43,7 +43,6 @@ type AWSConfig struct {
 
 type RedisConfig struct {
 	RedisURL string `env:"REDIS_URL,default=localhost:6379"`
-	Password string `env:"REDIS_PASSWORD,default="`
 }
 
 type SecurityConfig struct {
