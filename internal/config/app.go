@@ -51,10 +51,10 @@ type SecurityConfig struct {
 
 type MailConfig struct {
 	Hostname    string `env:"MAIL_HOST,default=localhost"`
-	Port        uint16 `env:"MAIL_PORT,default=25"`
 	User        string `env:"MAIL_USERNAME,default=admin"`
 	Password    string `env:"MAIL_PASSWORD,default=admin"`
 	FromAddress string `env:"MAIL_FROM_ADDRESS,default=admin@localhost"`
+	Port        uint16 `env:"MAIL_PORT,default=25"`
 }
 
 type RateLimitConfig struct {
