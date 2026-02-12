@@ -1,47 +1,27 @@
 services:
-  backend_blue:
+  myapp:
     build:
       context: .
       dockerfile: Dockerfile
-      target: prod
-    image: backend:1.0.0
-    container_name: backend_blue
+    image: myapp:latest
+    container_name: myapp
     ports:
-      - "4001:4000"
-    environment:
-      NODE_ENV: production
-    # depends_on:
-    #   - postgres
-    #   - redis
-    restart: always
-    profiles: ["prod"]
-    stop_grace_period: 30s
-    command: sh -c "./myapp migrate up && ./myapp server"
+      - "4000:4000"
     volumes:
       - ./.env.prod:/app/.env:ro
       - ./logs:/app/logs
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    restart: unless-stopped
 
-  backend_green:
-    build:
-      context: .
-      dockerfile: Dockerfile
-      target: prod
-    image: backend:1.0.1
-    container_name: backend_green
-    ports:
-      - "4002:4000"
-    environment:
-      NODE_ENV: production
-    # depends_on:
-    #   - postgres
-    #   - redis
-    restart: always
-    profiles: ["prod"]
-    stop_grace_period: 30s
-    command: sh -c "./myapp migrate up && ./myapp server"
+  worker:
+    image: myapp:latest
+    container_name: myapp-worker
+    command: ["worker"]
     volumes:
       - ./.env.prod:/app/.env:ro
       - ./logs:/app/logs
+    restart: unless-stopped
 
   postgres:
     image: postgres:16
@@ -60,9 +40,19 @@ services:
     container_name: redis
     ports:
       - "6379:6379"
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - "9090:9090"
     volumes:
-      - redis_data:/data
-    restart: always
+      - ./infra/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+    environment:
+      - PROMETHEUS_STORAGE_LOCAL_PATH=/prometheus
+    restart: unless-stopped
 
   grafana:
     image: grafana/grafana:latest
@@ -74,21 +64,9 @@ services:
     depends_on:
       - prometheus
       - loki
-    restart: always
+    restart: unless-stopped
     volumes:
       - grafana_data:/var/lib/grafana
-
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: prometheus
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./deploy/monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - prometheus_data:/prometheus
-    environment:
-      - PROMETHEUS_STORAGE_LOCAL_PATH=/prometheus
-    restart: always
 
   loki:
     image: grafana/loki:3.4.1
@@ -96,9 +74,9 @@ services:
     ports:
       - "3100:3100"
     volumes:
-      - ./deploy/monitoring/loki/loki-config.yml:/mnt/config/loki-config.yml # <local-path> → ./config
+      - ./infra/monitoring/loki/loki-config.yml:/mnt/config/loki-config.yml # <local-path> → ./config
     command: --config.file=/mnt/config/loki-config.yml
-    restart: always
+    restart: unless-stopped
 
   promtail:
     image: grafana/promtail:3.4.1
@@ -106,17 +84,39 @@ services:
     depends_on:
       - loki
     volumes:
-      - ./deploy/monitoring/promtail/promtail-config.yml:/mnt/config/promtail-config.yml # <local-path> → same local path
+      - ./infra/monitoring/promtail/promtail-config.yml:/mnt/config/promtail-config.yml # <local-path> → same local path
       - ./logs:/var/log
     command: --config.file=/mnt/config/promtail-config.yml
-    restart: always
+    restart: unless-stopped
 
   node_exporter:
     image: prom/node-exporter
     container_name: node_exporter
     ports:
       - "9100:9100"
-    restart: always
+    restart: unless-stopped
+
+  redis_exporter:
+    image: oliver006/redis_exporter:latest
+    container_name: redis_exporter
+    ports:
+      - "9121:9121"
+    environment:
+      REDIS_ADDR: redis:6379
+    # depends_on:
+    #   - redis
+    restart: unless-stopped
+
+  postgres_exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: postgres_exporter
+    ports:
+      - "9187:9187"
+    environment:
+      DATA_SOURCE_NAME: "postgresql://exporter:strong-password@postgres:5432/testdemo?sslmode=disable"
+    # depends_on:
+    #   - postgres
+    restart: unless-stopped
 
   rustfs:
     image: rustfs/rustfs:latest
@@ -126,23 +126,20 @@ services:
       - "9001:9001"
     volumes:
       - rustfs_data:/data
-    restart: always
+    restart: unless-stopped
 
-  asynqmon:
-    image: hibiken/asynqmon:latest
-    platform: linux/amd64
-    container_name: asynqmon
-    environment:
-      - REDIS_ADDR=redis:6379
+  databasus:
+    container_name: databasus
+    image: databasus/databasus:latest
     ports:
-      - "8085:8080"
-    depends_on:
-      - redis
-    restart: always
+      - "4005:4005"
+    volumes:
+      - databasus_data:/databasus-data
+    restart: unless-stopped
 
 volumes:
   postgres_data:
-  redis_data:
   prometheus_data:
   grafana_data:
   rustfs_data:
+  databasus_data:

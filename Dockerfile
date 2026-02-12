@@ -1,16 +1,26 @@
-FROM golang:1.24 AS prod
+# -------- Builder Stage --------
+FROM golang:1.24-alpine AS builder
 
 WORKDIR /app
 
-COPY go.mod go.sum ./
+RUN apk add --no-cache ca-certificates
 
-# Install dependencies
+COPY go.mod go.sum ./
 RUN go mod download
 
-# Copy source code
 COPY . .
 
-# Build the application
-RUN go build -o myapp ./cmd/main.go
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 \
+    go build -trimpath -ldflags="-s -w" -o myapp ./cmd/main.go
+
+# -------- Final Stage --------
+FROM gcr.io/distroless/base-debian12:nonroot
+
+WORKDIR /app
+
+COPY --from=builder /app/myapp .
 
 EXPOSE 4000
+
+ENTRYPOINT [ "./myapp" ]
+CMD ["server"]

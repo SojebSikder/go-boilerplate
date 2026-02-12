@@ -21,7 +21,7 @@ type Config struct {
 
 type AppConfig struct {
 	Name string `env:"APP_NAME,default=go-boilerplate"`
-	Port string `env:"PORT,default=8080"`
+	Port string `env:"PORT,default=4000"`
 	// TemplateDir stores the name of the directory that contains templates
 	TemplateDir string `env:"TEMPLATE_DIR,default=views"`
 	// StaticDir stores the name of the directory that will serve static files
