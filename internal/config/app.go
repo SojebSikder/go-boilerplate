@@ -1,7 +1,7 @@
 package config
 
 import (
-	"log"
+	"os"
 	"time"
 
 	"github.com/joeshaw/envdecode"
@@ -63,13 +63,22 @@ type RateLimitConfig struct {
 }
 
 func NewConfig() (*Config, error) {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	log.Fatal("Error loading .env file")
+	// }
+	//
+
+	if _, exists := os.LookupEnv("KUBERNETES_SERVICE_HOST"); !exists {
+		_ = godotenv.Load()
 	}
 
 	var cfg Config
-	err = envdecode.StrictDecode(&cfg)
+	err := envdecode.StrictDecode(&cfg)
+	if err != nil {
+		panic(err)
+	}
+
 	return &cfg, err
 }
 

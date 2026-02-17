@@ -33,7 +33,8 @@ func SetupRouter(lc fx.Lifecycle, ctg *config.Config, r *gin.Engine, log *zap.Lo
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
 			go func() {
-				if err := r.Run(":" + ctg.App.Port); err != nil && err != http.ErrServerClosed {
+				listenAddr := fmt.Sprintf("0.0.0.0:%s", ctg.App.Port)
+				if err := r.Run(listenAddr); err != nil && err != http.ErrServerClosed {
 					fmt.Println("Failed to start server:", err)
 				}
 			}()

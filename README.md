@@ -25,16 +25,13 @@ Or Running server
 air
 ```
 
-## Check fieldalignment
+## fieldalignment
 ```bash
+# Check fieldalignment
 fieldalignment ./...
-```
-
-## Fix fieldalignment
-```bash
+# Fix fieldalignment
 fieldalignment -fix ./...
 ```
-
 
 ## Running using Docker (for development)
 
@@ -43,8 +40,9 @@ docker compose -f docker-compose.yml up -d redis postgres prometheus grafana lok
 ```
 ## Running using Docker (for production)
 
-```
-docker compose -f docker-compose.yml --profile prod up --remove-orphans --force-recreate --build -d
+```bash
+docker compose build myapp
+docker compose up -d --force-recreate myapp
 ```
 
 ## Technology used

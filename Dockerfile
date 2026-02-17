@@ -19,6 +19,7 @@ FROM gcr.io/distroless/base-debian12:nonroot
 WORKDIR /app
 
 COPY --from=builder /app/myapp .
+COPY --from=builder /app/views ./views
 
 EXPOSE 4000
 
