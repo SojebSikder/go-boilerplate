@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: myapp-worker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: myapp-worker
+  template:
+    metadata:
+      labels:
+        app: myapp-worker
+    spec:
+      containers:
+        - name: myapp-worker
+          image: sojebsikder/myapp:latest
+          args: ["worker"]
+          envFrom:
+            - configMapRef:
+                name: myapp-env
