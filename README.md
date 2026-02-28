@@ -3,26 +3,49 @@
 A go boilerplate for building scalable and maintainable web applications in Go.
 
 ## Setup
-Run migrations command
-```
-go run cmd/main.go migrate up
+Start Infra
+
+```bash
+docker compose up -d postgres redis rustfs
 ```
 
-## Running
-
+## Running in development
 Running server
 ```bash
 go run cmd/main.go server
 ```
-
 Running worker
 ```bash
 go run cmd/main.go worker
 ```
-
 Or Running server
 ```bash
 air
+```
+
+## Production
+Start app production
+```bash
+docker compose build myapp
+
+docker compose up -d --force-recreate myapp
+docker compose up -d --force-recreate worker
+```
+
+Run migrations command
+```bash
+go run cmd/main.go migrate up
+```
+
+Run migrations using docker compose
+```bash
+docker compose run --rm myapp migrate up
+```
+
+or from source code
+Run migrations command
+```bash
+go run cmd/main.go migrate
 ```
 
 ## fieldalignment
@@ -33,17 +56,6 @@ fieldalignment ./...
 fieldalignment -fix ./...
 ```
 
-## Running using Docker (for development)
-
-```
-docker compose -f docker-compose.yml up -d redis postgres prometheus grafana loki promtail node_exporter rustfs --build
-```
-## Running using Docker (for production)
-
-```bash
-docker compose build myapp
-docker compose up -d --force-recreate myapp
-```
 
 ## Technology used
 
