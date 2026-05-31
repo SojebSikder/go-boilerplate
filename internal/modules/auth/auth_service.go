@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/hibiken/asynq"
 	"github.com/sojebsikder/go-boilerplate/internal/config"
@@ -58,7 +57,7 @@ func (s *AuthService) Hello(ctx context.Context) (string, error) {
 	return fmt.Sprintf("Hello, %s!", "World"), nil
 }
 
-func (s *AuthService) CreateUser(ctx *gin.Context, req *AuthRegisterRequest) (model.User, error) {
+func (s *AuthService) CreateUser(ctx context.Context, req *AuthRegisterRequest) (model.User, error) {
 	// Check if user already exists
 	if _, err := s.userRepo.FindByEmail(req.Email); err == nil {
 		return model.User{}, errors.New("User with this email already exists")
@@ -82,7 +81,7 @@ func (s *AuthService) GetAllUsers() ([]model.User, error) {
 	return s.userRepo.FindAll()
 }
 
-func (s *AuthService) Login(ctx *gin.Context, email, password string) (string, error) {
+func (s *AuthService) Login(ctx context.Context, email, password string) (string, error) {
 	user, err := s.userRepo.FindByEmail(email)
 	if err != nil {
 		return "", err
@@ -119,11 +118,11 @@ func (s *AuthService) ComparePassword(hashedPassword, password string) error {
 	return nil
 }
 
-func (s *AuthService) UpdateUser(ctx *gin.Context, user model.User) (model.User, error) {
+func (s *AuthService) UpdateUser(ctx context.Context, user model.User) (model.User, error) {
 	return s.userRepo.Update(user)
 }
 
-func (s *AuthService) DeleteUser(ctx *gin.Context, id string) error {
+func (s *AuthService) DeleteUser(ctx context.Context, id string) error {
 	user, err := s.userRepo.FindByID(id)
 	if err != nil {
 		return err
