@@ -5,8 +5,6 @@ import (
 	"github.com/sojebsikder/go-boilerplate/internal/app"
 	"github.com/sojebsikder/go-boilerplate/internal/config"
 	"github.com/sojebsikder/go-boilerplate/internal/middleware"
-	"github.com/sojebsikder/go-boilerplate/internal/modules/auth"
-	"github.com/sojebsikder/go-boilerplate/internal/modules/user"
 	"github.com/sojebsikder/go-boilerplate/internal/routes"
 
 	"github.com/spf13/cobra"
@@ -24,8 +22,7 @@ var ServerCmd = &cobra.Command{
 func StartServer() {
 	app := fx.New(
 		app.BaseModules(),
-		auth.HTTPModule,
-		user.HTTPModule,
+		app.BaseHTTPModules(),
 
 		fx.Provide(
 			GinServer,
