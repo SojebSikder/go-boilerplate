@@ -19,26 +19,28 @@ func NewUserController(
 	}
 }
 
-func (h *UserController) Create(c *gin.Context) {
+func (h *UserController) Create(ctx *gin.Context) {
 	var user model.User
-	if err := c.ShouldBind(&user); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := ctx.ShouldBind(&user); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	created, err := h.userService.CreateUser(user)
+	created, err := h.userService.CreateUser(ctx, user)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusCreated, created)
+
+	ctx.JSON(http.StatusCreated, created)
 }
 
-func (h *UserController) GetAll(c *gin.Context) {
-	users, err := h.userService.GetAllUsers()
+func (h *UserController) GetAll(ctx *gin.Context) {
+	users, err := h.userService.GetAllUsers(ctx)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, users)
+
+	ctx.JSON(http.StatusOK, users)
 }

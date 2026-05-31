@@ -59,7 +59,7 @@ func (s *AuthService) Hello(ctx context.Context) (string, error) {
 
 func (s *AuthService) CreateUser(ctx context.Context, req *AuthRegisterRequest) (model.User, error) {
 	// Check if user already exists
-	if _, err := s.userRepo.FindByEmail(req.Email); err == nil {
+	if _, err := s.userRepo.FindByEmail(ctx, req.Email); err == nil {
 		return model.User{}, errors.New("User with this email already exists")
 	}
 
@@ -74,15 +74,15 @@ func (s *AuthService) CreateUser(ctx context.Context, req *AuthRegisterRequest) 
 		Email:    &req.Email,
 		Password: &hashedPasswordStr,
 	}
-	return s.userRepo.Create(user)
+	return s.userRepo.Create(ctx, user)
 }
 
-func (s *AuthService) GetAllUsers() ([]model.User, error) {
-	return s.userRepo.FindAll()
+func (s *AuthService) GetAllUsers(ctx context.Context) ([]model.User, error) {
+	return s.userRepo.FindAll(ctx)
 }
 
 func (s *AuthService) Login(ctx context.Context, email, password string) (string, error) {
-	user, err := s.userRepo.FindByEmail(email)
+	user, err := s.userRepo.FindByEmail(ctx, email)
 	if err != nil {
 		return "", err
 	}
@@ -108,6 +108,7 @@ func (s *AuthService) HashPassword(password string) (string, error) {
 	if err != nil {
 		return "", err
 	}
+
 	return string(hashedPassword), nil
 }
 
@@ -115,17 +116,19 @@ func (s *AuthService) ComparePassword(hashedPassword, password string) error {
 	if err := bcrypt.CompareHashAndPassword([]byte(hashedPassword), []byte(password)); err != nil {
 		return err
 	}
+
 	return nil
 }
 
 func (s *AuthService) UpdateUser(ctx context.Context, user model.User) (model.User, error) {
-	return s.userRepo.Update(user)
+	return s.userRepo.Update(ctx, user)
 }
 
 func (s *AuthService) DeleteUser(ctx context.Context, id string) error {
-	user, err := s.userRepo.FindByID(id)
+	user, err := s.userRepo.FindByID(ctx, id)
 	if err != nil {
 		return err
 	}
-	return s.userRepo.Delete(user)
+
+	return s.userRepo.Delete(ctx, user)
 }
