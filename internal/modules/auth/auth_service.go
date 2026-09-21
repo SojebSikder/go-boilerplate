@@ -18,14 +18,14 @@ import (
 
 type AuthService struct {
 	logger      *zap.Logger
-	userRepo    repository.UserRepository
+	userRepo    *repository.UserRepository
 	config      *config.Config
 	asynqClient *asynq.Client
 }
 
 func NewAuthService(
 	logger *zap.Logger,
-	userRepo repository.UserRepository,
+	userRepo *repository.UserRepository,
 	config *config.Config,
 	asynqClient *asynq.Client,
 ) *AuthService {
