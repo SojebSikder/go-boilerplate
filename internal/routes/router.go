@@ -30,18 +30,23 @@ func SetupRouter(lc fx.Lifecycle, ctg *config.Config, r *gin.Engine, log *zap.Lo
 		c.JSON(200, gin.H{"status": "ok"})
 	})
 
+	srv := &http.Server{
+		Addr:    fmt.Sprintf("0.0.0.0:%s", ctg.App.Port),
+		Handler: r,
+	}
+
 	lc.Append(fx.Hook{
 		OnStart: func(ctx context.Context) error {
 			go func() {
-				listenAddr := fmt.Sprintf("0.0.0.0:%s", ctg.App.Port)
-				if err := r.Run(listenAddr); err != nil && err != http.ErrServerClosed {
+				if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
 					fmt.Println("Failed to start server:", err)
 				}
 			}()
 			return nil
 		},
 		OnStop: func(ctx context.Context) error {
-			return nil
+			log.Info("Shutting down HTTP server...")
+			return srv.Shutdown(ctx)
 		},
 	})
 }
