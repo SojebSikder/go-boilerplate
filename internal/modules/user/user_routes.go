@@ -5,9 +5,9 @@ import (
 	"github.com/sojebsikder/go-boilerplate/internal/middleware"
 )
 
-func RegisterRoutes(r *gin.Engine, c *UserController) {
+func RegisterRoutes(r *gin.Engine, c *UserController, auth *middleware.AuthMiddleware) {
 	routes := r.Group("/api/users")
-	routes.Use(middleware.AuthMiddleware())
+	routes.Use(auth.Handle())
 	routes.POST("/", c.Create)
 	routes.GET("/", c.GetAll)
 }
